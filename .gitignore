@@ -1,0 +1,28 @@
+# Claude Code workspace — local only, never publish
+CLAUDE.md
+.claude/
+.claude.json
+memory/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Secrets / credentials (defense in depth — none expected in this repo)
+.env
+.env.*
+*.pem
+*.key
+*credentials*.json
+*service-account*.json
+
+# Local previews / generated artifacts
+.cache/
+node_modules/
