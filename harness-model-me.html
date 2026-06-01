@@ -1783,9 +1783,9 @@
 
       <p>People say "Claude" to mean four different things: the model, the API, the harness, and the SDK. I conflated them at first too. The lesson that stuck: when something goes wrong, you can't fix it until you know which layer is broken.</p>
 
-      <h3 id="four-layers">The stack, from bottom to top</h3>
+      <h3 id="five-layers">The stack, from bottom to top</h3>
 
-      <div class="stack" role="figure" aria-label="The four-layer conceptual stack">
+      <div class="stack" role="figure" aria-label="The five-layer conceptual stack">
         <div class="stack-layer" data-role="user">
           <div class="stack-num">05</div>
           <div class="stack-body">
@@ -2831,61 +2831,63 @@ pipeline picture, or asks to draw a system, a data path, or a cold/warm path.</c
 
       <h3 id="primitive-comparison">Comparison at a glance</h3>
 
-      <table>
-        <thead>
-          <tr>
-            <th></th>
-            <th>Tool</th>
-            <th>Skill</th>
-            <th>Subagent</th>
-            <th>MCP server</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th>What it is</th>
-            <td>Function the model calls</td>
-            <td>Text injected into parent's prompt</td>
-            <td>Fresh Claude with isolated context</td>
-            <td>Protocol for exposing tools</td>
-          </tr>
-          <tr>
-            <th>Where it lives</th>
-            <td>Harness (built-in) or via MCP</td>
-            <td><code>.claude/skills/</code></td>
-            <td><code>.claude/agents/</code></td>
-            <td>Separate process or service</td>
-          </tr>
-          <tr>
-            <th>What it returns</th>
-            <td>Data (<code>tool_result</code>)</td>
-            <td>Nothing (influences parent inline)</td>
-            <td>A summary string</td>
-            <td>Data (<code>tool_result</code>)</td>
-          </tr>
-          <tr>
-            <th>Cost idle</th>
-            <td>Definition in tool list</td>
-            <td>~150 tok per description</td>
-            <td>~150 tok per description</td>
-            <td>~5 tok per name (deferred)</td>
-          </tr>
-          <tr>
-            <th>Cost active</th>
-            <td>Same as idle</td>
-            <td>+500–3000 tok (body)</td>
-            <td>Just the summary</td>
-            <td>+~500 tok (schema)</td>
-          </tr>
-          <tr>
-            <th>Best for</th>
-            <td>Atomic capabilities</td>
-            <td>Procedures with user decisions</td>
-            <td>Read-heavy isolated work</td>
-            <td>Adding new capabilities</td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="matrix-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th></th>
+              <th>Tool</th>
+              <th>Skill</th>
+              <th>Subagent</th>
+              <th>MCP server</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>What it is</th>
+              <td>Function the model calls</td>
+              <td>Text injected into parent's prompt</td>
+              <td>Fresh Claude with isolated context</td>
+              <td>Protocol for exposing tools</td>
+            </tr>
+            <tr>
+              <th>Where it lives</th>
+              <td>Harness (built-in) or via MCP</td>
+              <td><code>.claude/skills/</code></td>
+              <td><code>.claude/agents/</code></td>
+              <td>Separate process or service</td>
+            </tr>
+            <tr>
+              <th>What it returns</th>
+              <td>Data (<code>tool_result</code>)</td>
+              <td>Nothing (influences parent inline)</td>
+              <td>A summary string</td>
+              <td>Data (<code>tool_result</code>)</td>
+            </tr>
+            <tr>
+              <th>Cost idle</th>
+              <td>Definition in tool list</td>
+              <td>~150 tok per description</td>
+              <td>~150 tok per description</td>
+              <td>~5 tok per name (deferred)</td>
+            </tr>
+            <tr>
+              <th>Cost active</th>
+              <td>Same as idle</td>
+              <td>+500–3000 tok (body)</td>
+              <td>Just the summary</td>
+              <td>+~500 tok (schema)</td>
+            </tr>
+            <tr>
+              <th>Best for</th>
+              <td>Atomic capabilities</td>
+              <td>Procedures with user decisions</td>
+              <td>Read-heavy isolated work</td>
+              <td>Adding new capabilities</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <h3 id="primitive-decision-tree">The decision tree</h3>
 
@@ -3105,7 +3107,7 @@ pipeline picture, or asks to draw a system, a data path, or a cold/warm path.</c
 
       <p>A hook is a shell command the harness runs at specific event moments. <strong>Not</strong> a model decision; the harness fires hooks deterministically when configured events happen.</p>
 
-      <p>Hook events:</p>
+      <p>The hook events I reach for most (the Claude Code docs have the full list):</p>
 
       <ul>
         <li><code>PreToolUse</code>: fires before a tool runs (can block the call)</li>
@@ -3114,6 +3116,8 @@ pipeline picture, or asks to draw a system, a data path, or a cold/warm path.</c
         <li><code>Stop</code>: fires when Claude finishes a turn (good for notifications)</li>
         <li><code>SessionStart</code>: fires when a session begins (good for setup)</li>
       </ul>
+
+      <p>Others worth knowing exist for subagent stops, pre/post-compaction, session end, and desktop notifications.</p>
 
       <div class="hook-timeline" role="figure" aria-label="Hook event timeline during a turn">
         <div class="ht-step ht-action">Session starts</div>
@@ -3388,7 +3392,7 @@ pipeline picture, or asks to draw a system, a data path, or a cold/warm path.</c
       <nav class="toc">
         <a href="#tldr" class="toc-link toc-level-2">TL;DR</a>
         <a href="#stack" class="toc-link toc-level-2">The stack</a>
-        <a href="#four-layers" class="toc-link toc-level-3">The stack, bottom to top</a>
+        <a href="#five-layers" class="toc-link toc-level-3">The stack, bottom to top</a>
         <a href="#harness-model" class="toc-link toc-level-3">Harness ↔ model independence</a>
         <a href="#inside-harness" class="toc-link toc-level-3">Inside the harness</a>
         <a href="#conversation" class="toc-link toc-level-2">What a conversation is</a>
