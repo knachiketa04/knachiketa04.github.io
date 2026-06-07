@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Storage stayed invisible the whole pipeline. That's the trap.</title>
-<meta name="description" content="I built a recipe-writing AI end to end on two desktop-class machines and instrumented the I/O at every stage. Storage and AI infrastructure is my craft; the point was to measure where the work is actually slow at this scale, then reason about how it shifts at enterprise scale.">
+<title>I built a full LLM pipeline on two desktop machines. The bottleneck was never the disk.</title>
+<meta name="description" content="A full LLM pipeline, data prep through serving, built on two desktop machines and measured at every step. As a storage practitioner I expected the disk to bind; it almost never did. Here is what the real bottleneck was at each stage, and where storage finally takes over.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -466,8 +466,8 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
 <div class="page">
 
   <header class="page-header">
-    <h1>Storage stayed invisible the whole pipeline. That's the trap.</h1>
-    <p class="subtitle">A full LLM pipeline on two desktop machines, measured at every stage to find the bottleneck. It was never the disk, just as I expected.</p>
+    <h1>I built a full LLM pipeline on two desktop machines. The bottleneck was never the disk.</h1>
+    <p class="subtitle">Data prep, distillation, fine-tuning, eval, serving, all on workstation hardware. I measured every stage to find where the work is really slow, and where storage finally takes over.</p>
     <p class="meta">Kumar Nachiketa · AIHomeLab · Personal capacity</p>
   </header>
 
@@ -498,9 +498,9 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
 
     <main class="content">
 
-      <p class="lede">My wife types "a vegan Punjabi curry with chickpeas and spinach, no coconut," and a model running on two machines in our house writes her the whole recipe. I built that, but the recipe was never the point. Storage and AI infrastructure is my craft, and I built the whole pipeline at desk scale for one reason: to instrument the I/O at every step, see where the work is actually slow, and reason about how that shifts at enterprise scale.</p>
+      <p class="lede">My wife types "a vegan Punjabi curry with chickpeas and spinach, no coconut," and a model running on two machines in our house writes her the whole recipe. I built that, but the recipe was never the point. Storage and AI infrastructure is my craft, and I built the whole pipeline at desk scale for one reason: to instrument the I/O at every step, see where the work is actually slow, and reason about how that shifts at scale.</p>
 
-      <p>This is not the smart way to get vegan recipes; my wife's phone already writes a better curry. I picked it because it exercises every step of a real pipeline. There is a reflex in my field to blame storage first, with good reason: the worst outcome here is an expensive graphics chip sitting idle, waiting on data the storage layer was too slow to deliver. For a workload this small, though, I expected the disk never to be the bottleneck, and it never was. So the real question was not whether storage would bind; it was finding what actually was slow at each step, and pinning the one thing that would hand the job back to storage as you scale. Keep that scorecard as we go.</p>
+      <p>This is not the smart way to get vegan recipes; my wife's phone already writes a better curry. I picked it because it exercises every step of a real pipeline. There is a reflex in my field to blame storage first, with good reason: the worst outcome here is an expensive GPU idle, waiting on data the storage layer was too slow to deliver. For a workload this small, though, I expected the disk never to be the bottleneck, and it never was. So the real question was not whether storage would bind; it was finding what actually was slow at each step, and pinning the one thing that would hand the job back to storage as you scale. Keep that scorecard as we go.</p>
 
       <p>What follows is the five steps in plain language, each with a small diagram. Want the measured numbers and the read on how each one scales up? Every section has a "for engineers" drawer; everyone else can glide right past.</p>
 
@@ -621,7 +621,6 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
         </div>
         <div class="flow-legend" aria-hidden="true">
           <span><i class="lg-slow"></i>the real slow part</span>
-          <span><i class="lg-model"></i>the model doing AI work</span>
           <span><i class="lg-quiet"></i>storage, sitting quiet</span>
         </div>
         <p class="flow-caption">The disk just holds the files. The real work, and where a bug like 23 "vegan" catfish recipes hides, is <b>the cleaning logic</b> in the middle.</p>
@@ -634,7 +633,7 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
       <details class="for-eng">
         <summary>For engineers</summary>
         <div class="for-eng-body">
-          <p>Raw corpus <strong>12.8 MiB</strong>. Three sequential passes (schema unify, rule-based vegan/veg tagging, MinHash near-dup removal), each reading and writing single-digit MiB in <strong>under a second</strong>; full clean under five minutes wall-clock; shared filesystem at <strong>3% of capacity</strong> throughout. At one-second sampling the storage telemetry produced no resolved signal at all; the numbers are sub-sampling-noise. Where it would flip: single-node cleaning scales roughly linearly, so a 1 GB corpus is still seconds-to-minutes of CPU with the disk asleep. Storage only becomes first-order at petabyte-scale ingest, where sustained writes bind against shared-filesystem ceilings like the ~1.35 GB/s measured on this stack. <em>The 12.8 MiB figures are measured; the petabyte step is a projection, not data.</em></p>
+          <p>Raw corpus <strong>12.8 MiB</strong>. Three sequential passes (schema unify, rule-based vegan/veg tagging, MinHash near-dup removal), each reading and writing single-digit MiB in <strong>under a second</strong>; full clean under five minutes wall-clock; shared filesystem at <strong>3% of capacity</strong> throughout. At one-second sampling the storage telemetry produced no resolved signal at all; the numbers are sub-sampling-noise. Where it would flip: single-node cleaning scales roughly linearly, so a 1 GB corpus is still seconds-to-minutes of CPU with the disk asleep. Storage only becomes first-order at terabyte/petabyte-scale ingest, where sustained writes bind against shared-filesystem ceilings like the ~1.35 GB/s measured on this stack. <em>The 12.8 MiB figures are measured; the petabyte step is a projection, not data.</em></p>
         </div>
       </details>
 

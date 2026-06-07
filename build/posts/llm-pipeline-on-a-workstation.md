@@ -1,6 +1,6 @@
 ---
-title: Storage stayed invisible the whole pipeline. That's the trap.
-subtitle: A full LLM pipeline on two desktop machines, measured at every stage to find the bottleneck. It was never the disk, just as I expected.
+title: I built a full LLM pipeline on two desktop machines. The bottleneck was never the disk.
+subtitle: Data prep, distillation, fine-tuning, eval, serving, all on workstation hardware. I measured every stage to find where the work is really slow, and where storage finally takes over.
 byline: Kumar Nachiketa · AIHomeLab · Personal capacity
 author: Kumar Nachiketa
 authorsub: AIHomeLab · personal capacity
@@ -12,14 +12,14 @@ scope: One AI pipeline, two desktops
 scopesub: Plain-language; engineer depth on tap
 slug: llm-pipeline-on-a-workstation
 tags: Storage, AI infrastructure, LLM
-description: I built a recipe-writing AI end to end on two desktop-class machines and instrumented the I/O at every stage. Storage and AI infrastructure is my craft; the point was to measure where the work is actually slow at this scale, then reason about how it shifts at enterprise scale.
-summary: I built a recipe-writing AI end to end on two desktop-class machines and watched the storage at every step. The disk was almost never the bottleneck, just as I expected. The interesting part is what actually was, at each stage, and where storage finally takes over. One gauge, five stages, plain language, with the measured numbers tucked into "for engineers" toggles for the infra crowd.
+description: A full LLM pipeline, data prep through serving, built on two desktop machines and measured at every step. As a storage practitioner I expected the disk to bind; it almost never did. Here is what the real bottleneck was at each stage, and where storage finally takes over.
+summary: I built a recipe-writing LLM end to end on two desktop machines, data prep, teacher-student distillation, fine-tuning, eval, and serving, and measured where each stage actually got slow. The disk was almost never the bottleneck; the interesting part is what was, and where storage finally takes over. Measured numbers tucked into "for engineers" toggles.
 sourcenote: <strong>A note on sources.</strong> Every number in this post comes from a real run on two NVIDIA DGX Spark workstations in my house; nothing is rounded into a new claim. Where I talk about enterprise scale, that is reasoned projection, labeled as such throughout. The full engineer writeup, with every measurement, the reproduce kits, and the <a href="https://github.com/knachiketa04/aihomelab/blob/main/artifacts/concepts/storage-touchpoints-map/storage-touchpoints-map.md" target="_blank" rel="noopener">storage touch-points map</a> behind it, lives in the AIHomeLab artifact: <a href="https://github.com/knachiketa04/aihomelab/blob/main/artifacts/concepts/llm-pipeline-on-a-workstation/llm-pipeline-on-a-workstation.md" target="_blank" rel="noopener">What I learned building an LLM pipeline on a workstation</a>.
 ---
 
-My wife types "a vegan Punjabi curry with chickpeas and spinach, no coconut," and a model running on two machines in our house writes her the whole recipe. I built that, but the recipe was never the point. Storage and AI infrastructure is my craft, and I built the whole pipeline at desk scale for one reason: to instrument the I/O at every step, see where the work is actually slow, and reason about how that shifts at enterprise scale.
+My wife types "a vegan Punjabi curry with chickpeas and spinach, no coconut," and a model running on two machines in our house writes her the whole recipe. I built that, but the recipe was never the point. Storage and AI infrastructure is my craft, and I built the whole pipeline at desk scale for one reason: to instrument the I/O at every step, see where the work is actually slow, and reason about how that shifts at scale.
 
-This is not the smart way to get vegan recipes; my wife's phone already writes a better curry. I picked it because it exercises every step of a real pipeline. There is a reflex in my field to blame storage first, with good reason: the worst outcome here is an expensive graphics chip sitting idle, waiting on data the storage layer was too slow to deliver. For a workload this small, though, I expected the disk never to be the bottleneck, and it never was. So the real question was not whether storage would bind; it was finding what actually was slow at each step, and pinning the one thing that would hand the job back to storage as you scale. Keep that scorecard as we go.
+This is not the smart way to get vegan recipes; my wife's phone already writes a better curry. I picked it because it exercises every step of a real pipeline. There is a reflex in my field to blame storage first, with good reason: the worst outcome here is an expensive GPU idle, waiting on data the storage layer was too slow to deliver. For a workload this small, though, I expected the disk never to be the bottleneck, and it never was. So the real question was not whether storage would bind; it was finding what actually was slow at each step, and pinning the one thing that would hand the job back to storage as you scale. Keep that scorecard as we go.
 
 What follows is the five steps in plain language, each with a small diagram. Want the measured numbers and the read on how each one scales up? Every section has a "for engineers" drawer; everyone else can glide right past.
 
@@ -118,7 +118,7 @@ node: Three sources | Wikibooks, Gutenberg, Wikipedia | 12.8 MiB, three messy fo
 node quiet: Storage | lands on the shared disk | 3% full, idle
 node slow: Slow part | three cleaning passes | unify formats, tag vegan/veg, drop duplicates
 node: Out | one clean corpus | ready to use
-legend: slow=the real slow part | model=the model doing AI work | quiet=storage, sitting quiet
+legend: slow=the real slow part | quiet=storage, sitting quiet
 caption: The disk just holds the files. The real work, and where a bug like 23 "vegan" catfish recipes hides, is **the cleaning logic** in the middle.
 {% endflow %}
 
@@ -129,7 +129,7 @@ What I actually fought was the logic. Parsing three messy formats into one, and 
       <details class="for-eng">
         <summary>For engineers</summary>
         <div class="for-eng-body">
-          <p>Raw corpus <strong>12.8 MiB</strong>. Three sequential passes (schema unify, rule-based vegan/veg tagging, MinHash near-dup removal), each reading and writing single-digit MiB in <strong>under a second</strong>; full clean under five minutes wall-clock; shared filesystem at <strong>3% of capacity</strong> throughout. At one-second sampling the storage telemetry produced no resolved signal at all; the numbers are sub-sampling-noise. Where it would flip: single-node cleaning scales roughly linearly, so a 1 GB corpus is still seconds-to-minutes of CPU with the disk asleep. Storage only becomes first-order at petabyte-scale ingest, where sustained writes bind against shared-filesystem ceilings like the ~1.35 GB/s measured on this stack. <em>The 12.8 MiB figures are measured; the petabyte step is a projection, not data.</em></p>
+          <p>Raw corpus <strong>12.8 MiB</strong>. Three sequential passes (schema unify, rule-based vegan/veg tagging, MinHash near-dup removal), each reading and writing single-digit MiB in <strong>under a second</strong>; full clean under five minutes wall-clock; shared filesystem at <strong>3% of capacity</strong> throughout. At one-second sampling the storage telemetry produced no resolved signal at all; the numbers are sub-sampling-noise. Where it would flip: single-node cleaning scales roughly linearly, so a 1 GB corpus is still seconds-to-minutes of CPU with the disk asleep. Storage only becomes first-order at terabyte/petabyte-scale ingest, where sustained writes bind against shared-filesystem ceilings like the ~1.35 GB/s measured on this stack. <em>The 12.8 MiB figures are measured; the petabyte step is a projection, not data.</em></p>
         </div>
       </details>
 
