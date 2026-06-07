@@ -14,34 +14,64 @@
 </head>
 <body>
 
-<div class="page-bar" aria-hidden="true"></div>
+{{ nav }}
 
-<nav class="site-nav">
-  <div class="site-nav-inner">
-    <a class="brand" href="index.html">Notes from the AIHomeLab</a>
-    <div class="nav-links">
-      <a href="https://github.com/knachiketa04" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://www.linkedin.com/in/kumar-nachiketa/" target="_blank" rel="noopener">LinkedIn</a>
-    </div>
-  </div>
-</nav>
+<div class="page">
 
-<div class="container">
-  <h1>Kumar Nachiketa</h1>
-  <p class="tagline">Notes from the AIHomeLab. Personal capacity.</p>
+  <header class="page-header">
+    <h1>Kumar Nachiketa</h1>
+    <p class="subtitle">Notes from the AIHomeLab. Personal capacity.</p>
+  </header>
 
-  <p class="about">I'm a storage practitioner running an AI infrastructure home lab on a pair of NVIDIA DGX Spark nodes. I write here about what I learn building public AI infrastructure: storage, training, serving, the tools I use to build with. The work and the writing are in personal capacity, not affiliated with my employer.</p>
+  <div class="body-grid">
 
-  <h2>Posts</h2>
-  <ul class="posts">
+    <aside class="sidebar sidebar-left" aria-label="About">
+      <div class="meta-card">
+        <div class="meta-label">About</div>
+        <div class="meta-value">Storage, the quiet engine under large-scale AI.</div>
+        <div class="meta-sub">I bring parallel filesystems, modern object storage, and the full span of file, block, and object, fluent in where the layer is heading next, to modern AI infrastructure, where the data path decides whether your most expensive hardware is working or waiting. I write to make that decision legible: where storage is the lever, where it is innocent, and why. Honest about the trade-offs, measured rather than marketed. The home lab is one method, not the whole story.</div>
+      </div>
+    </aside>
+
+    <main class="content">
+      <div class="toc-label">All posts</div>
+      <ul class="posts" id="post-list">
 {{ posts }}
-  </ul>
+      </ul>
+    </main>
 
-  <footer>
-    <p>Find me on <a href="https://github.com/knachiketa04" target="_blank" rel="noopener">GitHub</a> · <a href="https://www.linkedin.com/in/kumar-nachiketa/" target="_blank" rel="noopener">LinkedIn</a>.</p>
+    <aside class="sidebar sidebar-right" aria-label="Filter posts by topic">
+      <div class="toc-label">Topics</div>
+      <nav class="topic-list">
+{{ topics }}
+      </nav>
+    </aside>
+
+  </div>
+
+  <footer class="page-footer">
     <p>For corrections to posts, please <a href="https://github.com/knachiketa04/knachiketa04.github.io/issues" target="_blank" rel="noopener">open an issue</a>.</p>
   </footer>
 </div>
+
+<script>
+  // Click a topic in the right sidebar to filter the post list (no reload).
+  (function () {
+    var items = document.querySelectorAll('#post-list .post-item');
+    var links = document.querySelectorAll('.topic-list .topic-link');
+    links.forEach(function (link) {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        var tag = link.getAttribute('data-tag');
+        links.forEach(function (l) { l.classList.toggle('is-active', l === link); });
+        items.forEach(function (li) {
+          var tags = (li.getAttribute('data-tags') || '').split(',');
+          li.style.display = (!tag || tags.indexOf(tag) !== -1) ? '' : 'none';
+        });
+      });
+    });
+  })();
+</script>
 
 </body>
 </html>

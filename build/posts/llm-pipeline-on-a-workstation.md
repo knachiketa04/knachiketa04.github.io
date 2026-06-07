@@ -11,6 +11,7 @@ readingsub: Numbers tucked in the toggles
 scope: One AI pipeline, two desktops
 scopesub: Plain-language; engineer depth on tap
 slug: llm-pipeline-on-a-workstation
+tags: Storage, AI infrastructure, LLM
 description: I built a recipe-writing AI end to end on two desktop-class machines and instrumented the I/O at every stage. Storage and AI infrastructure is my craft; the point was to measure where the work is actually slow at this scale, then reason about how it shifts at enterprise scale.
 summary: I built a recipe-writing AI end to end on two desktop-class machines and watched the storage at every step. The disk was almost never the bottleneck, just as I expected. The interesting part is what actually was, at each stage, and where storage finally takes over. One gauge, five stages, plain language, with the measured numbers tucked into "for engineers" toggles for the infra crowd.
 sourcenote: <strong>A note on sources.</strong> Every number in this post comes from a real run on two NVIDIA DGX Spark workstations in my house; nothing is rounded into a new claim. Where I talk about enterprise scale, that is reasoned projection, labeled as such throughout. The full engineer writeup, with every measurement, the reproduce kits, and the <a href="https://github.com/knachiketa04/aihomelab/blob/main/artifacts/concepts/storage-touchpoints-map/storage-touchpoints-map.md" target="_blank" rel="noopener">storage touch-points map</a> behind it, lives in the AIHomeLab artifact: <a href="https://github.com/knachiketa04/aihomelab/blob/main/artifacts/concepts/llm-pipeline-on-a-workstation/llm-pipeline-on-a-workstation.md" target="_blank" rel="noopener">What I learned building an LLM pipeline on a workstation</a>.
@@ -257,14 +258,14 @@ node: Out | the recipe | ~269 tokens
 caption: Almost all the cost that matters is in the first box: a one-time start-up that was **one core doing a parallel job alone**. After that, steady-state speed is the memory wall again.
 {% endflow %}
 
-During that 106-second start-up, exactly one processor core was pinned at full tilt while nineteen others sat idle, and the disk barely ticked over. The default loader unpacks the model one piece at a time on a single thread. I changed one setting to a loader that unpacks all the pieces in parallel, and the start-up dropped from 106 seconds to about 6, then to about 3 with a different one. Same model, same bytes, same disk. An 18-to-36-times speedup, and I never touched storage. The proof it was never the disk: warming the cache first changed nothing at all.
+During that 106-second start-up, exactly one processor core was pinned at full tilt while nineteen others sat idle, and the disk barely ticked over. The default loader unpacks the model one piece at a time on a single thread. I changed one setting to a loader that unpacks all the pieces in parallel, and the start-up dropped from 106 seconds to about 6, then to about 3 with a different one. Same model, same bytes, same disk. A 14-to-36-times speedup, and I never touched storage. The proof it was never the disk: warming the cache first changed nothing at all.
 
 But this step is also where the disk finally gets its moment, and it is worth seeing why. "The disk did not matter" was true only because the slow loader was too slow to stress it. The instant you put in a fast loader, it reads the disk at nearly full speed, and now the disk is the next thing in line to be the bottleneck. Put the model on a slower networked drive and that fast loader would feel it immediately, while the old slow loader never would have noticed. The disk was not innocent by law. It was innocent because nothing was asking enough of it yet.
 
       <details class="for-eng">
         <summary>For engineers</summary>
         <div class="for-eng-body">
-          <p>Cold-loading the <strong>15.27 GiB</strong> student with vLLM's default loader: ~<strong>106 s</strong>. A one-line <code>--load-format</code> change, same bytes, byte-identical output:</p>
+          <p>Cold-loading the <strong>15.27 GiB</strong> base weights with vLLM's default loader: ~<strong>106 s</strong>. A one-line <code>--load-format</code> change, same bytes, byte-identical output:</p>
           <table>
             <thead><tr><th>Loader</th><th>Cold load</th><th>vs default</th></tr></thead>
             <tbody>
@@ -273,9 +274,51 @@ But this step is also where the disk finally gets its moment, and it is worth se
               <tr><td><code>runai_streamer</code></td><td>~3 s</td><td>36x</td></tr>
             </tbody>
           </table>
+          <p>An independent reproduction, where the default loader landed faster at about 88 seconds, read 14 to 28x; the order-of-magnitude gap held.</p>
           <p>During the default load, one core pinned near 100% while the other 19 sat idle, and the NVMe peaked around <strong>0.5 GB/s</strong>, a few percent of a Gen5 drive (~0.14 GiB/s effective). Dropping the page cache first changed nothing: warm equals cold means the work is per-tensor materialization in Python, not disk reads. Once the CPU wall is gone, RunAI hit ~<strong>9.2 GB/s</strong> on a ~10 GB/s drive, and the storage tier re-enters as the next ceiling: a source slower than local NVMe would throttle the fast loaders, while the default loader is too slow to feel the disk at all. <em>The 18-36x and one-core signature are measured; the networked-source consequence follows from this lab's measured ceilings but was not run here.</em></p>
         </div>
       </details>
+
+<div class="payoff">
+  <div class="payoff-label">What she actually gets</div>
+
+  <p>Back to the request at the very top. Here is the recipe the finished model wrote for my wife's exact words, "a vegan Punjabi curry with chickpeas and spinach, no coconut," served off the two machines in our house:</p>
+
+  <div class="recipe-card">
+    <h4>Vegan Punjabi Chickpea and Spinach Curry <span class="recipe-note">(it labeled this "Gobi Aloo Sabzi-style")</span></h4>
+    <p><strong>Serves 2 to 3.</strong> 1 cup cooked chickpeas, 2 cups fresh spinach, 1 onion, 2 to 3 garlic cloves, 1 to 2 green chilies, 1 tbsp tomato paste, 1 tsp turmeric, 1 tsp garam masala, 1 tsp cumin seeds, 1 tbsp oil (sunflower or avocado), salt.</p>
+    <ol>
+      <li>Heat the oil, add cumin seeds, let them sizzle for ten seconds.</li>
+      <li>Sauté the onion until golden, then add the garlic and green chilies for a minute.</li>
+      <li>Stir in the tomato paste and cook two to three minutes until it thickens.</li>
+      <li>Add the chickpeas, turmeric, and a splash of water; simmer five minutes.</li>
+      <li>Add the spinach and cook until wilted, three to four minutes; stir in the garam masala and salt.</li>
+      <li>Serve hot with rice or flatbread.</li>
+    </ol>
+  </div>
+
+  <p>That is a real, servable curry: vegan, no coconut, chickpeas and spinach as asked. It is also where the honest part lives. Look at the title. "Gobi Aloo" is a cauliflower-and-potato dish, and this one has neither. That was not a fluke. Across five tries the student stamped a "Gobi Aloo" or "Gobi Palak" label on four of them, every time confident, every time wrong. It learned the house style of its training set, the habit of giving each dish a regional name, without learning the accuracy to make the name fit. The plain base model never did this; it just called the dish what it was. That is Step 4 again: the slow part was never the disk, it was the data and the judgment baked into it.</p>
+
+  <p>The same shape shows up on the one rule I actually trained for. Tell the base model "no coconut" and it still reaches for coconut oil as a default cooking fat in four of five tries. The fine-tuned student is better, two of five, but better is not fixed. So the fine-tune did not buy me a better cook, my wife's phone still wins, and it did not buy me a reliable one either. What it bought was a partial improvement on the constraint, four in five down to two in five, plus the kitchen's house voice. That is the honest size of what a fine-tune onto an 8B student moves, worth knowing before you spend the GPUs.</p>
+
+  <details class="for-eng">
+    <summary>For engineers</summary>
+    <div class="for-eng-body">
+      <p>One prompt, one system message, temperature 0.7, seed 42, thinking disabled. Served as base Qwen3-8B plus the vegan LoRA adapter on a single vLLM server, where the request's <code>model</code> field selects base or fine-tuned. This is an illustrative sample, not a benchmark; the quantitative quality numbers belong to the eval, not to one generation.</p>
+      <table>
+        <thead><tr><th></th><th>Fine-tuned (LoRA)</th><th>Base Qwen3-8B</th></tr></thead>
+        <tbody>
+          <tr><td>Offered coconut oil despite "no coconut"</td><td>2 of 5 samples</td><td>4 of 5 samples</td></tr>
+          <tr><td>Invented an inaccurate "Gobi" dish label</td><td>4 of 5 samples</td><td>never</td></tr>
+          <tr><td>Register</td><td>plain recipe voice</td><td>generic assistant, emoji</td></tr>
+          <tr><td>Length</td><td>~350 tokens</td><td>~580 tokens</td></tr>
+        </tbody>
+      </table>
+      <p>Five seeds at temperature 0.7, hand-checked against the raw generations. The base offered coconut oil as a cooking fat in 4 of 5 (a fifth named coconut milk only to tell you to skip it, so it does not count); the fine-tune in 2 of 5. The fine-tune invented an inaccurate "Gobi" label in 4 of 5; the base never did. Small n, illustrative and hand-verified, not a benchmark.</p>
+      <p>The serve command and the request driver ship in the pipeline's <a href="https://github.com/knachiketa04/aihomelab/tree/main/artifacts/concepts/llm-pipeline-on-a-workstation/reproduce/serve/" target="_blank" rel="noopener">serve kit</a>.</p>
+    </div>
+  </details>
+</div>
 
 ## So was it ever storage? {#was-it-storage} {toc:So was it ever storage?}
 

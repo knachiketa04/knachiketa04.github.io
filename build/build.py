@@ -24,8 +24,9 @@ ROOT = Path(__file__).parent          # build/ — the tracked source: posts, te
 OUT = ROOT.parent                     # repo root — GitHub Pages serves the generated HTML here
 POSTS = ROOT / "posts"
 STYLES = ROOT / "styles"
-TEMPLATE = (ROOT / "templates" / "base.html").read_text(encoding="utf-8")
-INDEX_TEMPLATE = (ROOT / "templates" / "index.html").read_text(encoding="utf-8")
+NAV = (ROOT / "templates" / "nav.html").read_text(encoding="utf-8").strip()   # shared top nav, injected into both templates
+TEMPLATE = (ROOT / "templates" / "base.html").read_text(encoding="utf-8").replace("{{ nav }}", NAV)
+INDEX_TEMPLATE = (ROOT / "templates" / "index.html").read_text(encoding="utf-8").replace("{{ nav }}", NAV)
 CSS = (STYLES / "site.css").read_text(encoding="utf-8")
 
 # Left-sidebar meta cards: (label, frontmatter value key, frontmatter sub key).
@@ -357,19 +358,37 @@ def render_post(meta, body, slug):
     return page, toc, content
 
 
+def post_tags(meta):
+    return [t.strip() for t in meta.get("tags", "").split(",") if t.strip()]
+
+
 def render_index(entries):
     entries = sorted(entries, key=lambda m: m.get("date", ""), reverse=True)
+
     items = []
     for m in entries:
+        data = ",".join(slugify(t) for t in post_tags(m))
         items.append(
-            '      <li class="post-item">\n'
+            f'      <li class="post-item" data-tags="{data}">\n'
             f'        <div class="post-date">{m.get("date", "")}</div>\n'
             f'        <h3 class="post-title"><a href="{m["slug"]}.html">{m.get("title", "")}</a></h3>\n'
             f'        <p class="post-desc">{m.get("summary", "")}</p>\n'
             '      </li>'
         )
+
+    counts = {}
+    for m in entries:
+        for t in post_tags(m):
+            counts[t] = counts.get(t, 0) + 1
+    topics = ['        <a href="#" class="topic-link is-active" data-tag="">'
+              f'All posts <span class="topic-count">{len(entries)}</span></a>']
+    for name, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0].lower())):
+        topics.append(f'        <a href="#" class="topic-link" data-tag="{slugify(name)}">'
+                      f'{html.escape(name)} <span class="topic-count">{n}</span></a>')
+
     page = INDEX_TEMPLATE.replace("{{ styles }}", CSS)
     page = page.replace("{{ posts }}", "\n".join(items))
+    page = page.replace("{{ topics }}", "\n".join(topics))
     return page
 
 

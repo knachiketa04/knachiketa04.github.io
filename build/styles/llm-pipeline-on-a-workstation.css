@@ -12,7 +12,7 @@
 }
 .uc-node.uc-model {
   border-color: var(--accent-violet); border-left-width: 3px;
-  background: linear-gradient(135deg, rgba(124,92,255,0.07), transparent);
+  background: linear-gradient(135deg, rgba(203,166,247,0.07), transparent);
 }
 .uc-label { font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.35rem; }
 .uc-text { font-size: 0.9375rem; color: var(--text); line-height: 1.45; }
@@ -42,11 +42,25 @@
 .ps-bn { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
 .ps-bn b { color: var(--text); font-weight: 600; }
 .pipe-substrate {
-  margin-top: 0.75rem; border: 1px dashed rgba(0,194,168,0.45); border-radius: 8px;
-  padding: 0.65rem 0.9rem; background: linear-gradient(135deg, rgba(0,194,168,0.07), transparent);
+  margin-top: 0.75rem; border: 1px dashed rgba(148,226,213,0.45); border-radius: 8px;
+  padding: 0.65rem 0.9rem; background: linear-gradient(135deg, rgba(148,226,213,0.07), transparent);
   font-size: 0.8125rem; color: var(--muted); line-height: 1.45;
 }
 .pipe-substrate b { color: var(--accent); font-weight: 600; }
 @media (max-width: 700px) {
   .pipe-phases { grid-template-columns: 1fr; }
 }
+
+/* Recipe payoff block (one-off, this post). Reuses the .tryit callout treatment. */
+.payoff { margin: 2.5rem 0 0.5rem; }
+.payoff-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 700; margin-bottom: 0.6rem; }
+.recipe-card {
+  margin: 1.25rem 0; padding: 0.9rem 1.1rem;
+  border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+  border-radius: 8px; background: linear-gradient(135deg, rgba(148,226,213,0.07), transparent);
+}
+.recipe-card h4 { margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--text); line-height: 1.35; }
+.recipe-note { font-weight: 400; font-size: 0.8125rem; color: var(--muted); }
+.recipe-card p { margin: 0 0 0.75rem; font-size: 0.9375rem; line-height: 1.55; }
+.recipe-card ol { margin: 0; padding-left: 1.25rem; }
+.recipe-card li { margin: 0 0 0.4rem; font-size: 0.9375rem; line-height: 1.5; }

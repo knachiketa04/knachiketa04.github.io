@@ -10,6 +10,7 @@ datesub: Living document
 scope: Mental model for AI coding agents
 scopesub: Examples from Claude Code; concepts apply to Cursor, Cline, Codex, Antigravity, and custom SDK builds
 slug: harness-model-me
+tags: AI agents, AI infrastructure, Claude Code
 description: A mental model for AI coding agents — Claude Code, Cursor, Cline, Codex, Antigravity, custom SDK builds. The harness/model split, context windows, tools, subagents, skills, MCP, and governance.
 summary: Five things I had to internalize about AI coding agents (Claude Code, Cursor, Cline, Codex, Antigravity, custom SDK builds): the harness/model split, where context goes, why descriptions matter, picking the right primitive, soft vs hard governance.
 sourcenote: <strong>A note on sources.</strong> This is my mental model of how Claude Code works, built up through conversations with Claude and months of running my AIHomeLab. It's an interpretation, not Anthropic's official documentation. If you spot something factually wrong, a gap, or a place where my framing misses what's actually happening under the hood, I'd appreciate the correction. I'd rather update this than be wrong in public.

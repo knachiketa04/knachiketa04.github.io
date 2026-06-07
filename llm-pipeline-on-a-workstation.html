@@ -17,50 +17,51 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  --bg: #0B1020;
-  --surface: #131A33;
-  --rule: #1E293B;
-  --text: #F1F5F9;
-  --muted: #94A3B8;
-  --accent: #00C2A8;
-  --accent-warm: #F2C744;
-  --accent-violet: #7C5CFF;
-  --code-bg: #131A33;
+  /* Catppuccin Mocha — https://catppuccin.com/palette */
+  --bg: #1e1e2e;             /* Base */
+  --surface: #313244;        /* Surface0 — cards, code, diagram nodes */
+  --rule: #45475a;           /* Surface1 — borders, separators */
+  --text: #cdd6f4;           /* Text */
+  --muted: #a6adc8;          /* Subtext0 — secondary text, dates, captions */
+  --accent: #94e2d5;         /* Teal — links, h3, inline code, primary */
+  --accent-warm: #f9e2af;    /* Yellow — h2, strong emphasis */
+  --accent-violet: #cba6f7;  /* Mauve — model-layer accents, callouts */
+  --code-bg: #313244;        /* Surface0 */
+  --shell-max: 1320px;       /* one shared width: nav, header, and content grid all align to this */
 }
 
 * { box-sizing: border-box; }
-html { background: var(--bg); scroll-behavior: smooth; }
+/* Reserve the scrollbar gutter always, so short pages (the index) and long ones
+   (articles) keep the exact same content width — otherwise the centered nav and
+   columns shift ~7px between pages depending on whether a scrollbar is present. */
+html { background: var(--bg); scroll-behavior: smooth; scrollbar-gutter: stable; }
 body {
   margin: 0; background: var(--bg); color: var(--text);
   font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
   font-size: 17px; line-height: 1.7;
   -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
 }
-.page-bar {
-  height: 3px;
-  background: linear-gradient(to right, var(--accent-violet) 0%, var(--accent) 50%, var(--accent-warm) 100%);
-  opacity: 0.85;
-}
 .site-nav { border-bottom: 1px solid var(--rule); }
 .site-nav-inner {
-  max-width: 1080px; margin: 0 auto; padding: 1rem 2rem;
+  max-width: var(--shell-max); margin: 0 auto; padding: 1rem 2rem;
   display: flex; align-items: center; justify-content: space-between; gap: 1rem;
   font-size: 0.875rem;
 }
 .site-nav .brand { color: var(--text); font-weight: 600; text-decoration: none; border-bottom: none; letter-spacing: -0.01em; }
 .site-nav .brand:hover { color: var(--accent); }
-.site-nav .nav-links { display: flex; gap: 1.25rem; }
-.site-nav .nav-links a { color: var(--muted); text-decoration: none; border-bottom: none; }
+.site-nav .nav-links { display: flex; gap: 1rem; align-items: center; }
+.site-nav .nav-links a { color: var(--muted); text-decoration: none; border-bottom: none; display: inline-flex; align-items: center; }
 .site-nav .nav-links a:hover { color: var(--accent); }
+.nav-icon { width: 19px; height: 19px; fill: currentColor; display: block; }
 .footer-home { margin-bottom: 1.5rem !important; }
 @media (max-width: 700px) { .site-nav-inner { padding: 0.85rem 1.25rem; } }
-.page { padding: 0 2rem; }
+.page { max-width: var(--shell-max); margin: 0 auto; padding: 0 2rem; }
 header.page-header { border-bottom: 1px solid var(--rule); padding: 4rem 0 2.25rem; margin-bottom: 3rem; }
 .body-grid {
   display: grid;
-  grid-template-columns: minmax(180px, 200px) minmax(0, 760px) minmax(180px, 220px);
-  gap: clamp(1.5rem, 3vw, 3.5rem);
-  align-items: start; justify-content: center; padding-bottom: 4rem;
+  grid-template-columns: minmax(180px, 200px) minmax(0, 1fr) minmax(180px, 220px);
+  gap: 2.5rem;
+  align-items: start; padding-bottom: 4rem;
 }
 .content { min-width: 0; }
 .sidebar {
@@ -72,9 +73,9 @@ header.page-header { border-bottom: 1px solid var(--rule); padding: 4rem 0 2.25r
 .sidebar::-webkit-scrollbar-thumb { background: var(--rule); border-radius: 3px; }
 .sidebar::-webkit-scrollbar-thumb:hover { background: var(--muted); }
 @media (max-width: 1180px) {
-  .body-grid { grid-template-columns: minmax(0, 760px); }
+  .body-grid { grid-template-columns: minmax(0, 760px); justify-content: center; }
   .sidebar { display: none; }
-  .page { padding: 0 2rem; }
+  header.page-header { max-width: 760px; margin-left: auto; margin-right: auto; }
 }
 @media (max-width: 700px) {
   .page { padding: 0 1.25rem; }
@@ -85,12 +86,12 @@ header.page-header { border-bottom: 1px solid var(--rule); padding: 4rem 0 2.25r
 h1 { font-size: 2.5rem; line-height: 1.15; margin: 0 0 0.5rem; font-weight: 700; letter-spacing: -0.025em; }
 .subtitle { color: var(--muted); font-size: 1.0625rem; margin: 0 0 1rem; }
 .meta { color: var(--muted); font-size: 0.875rem; margin: 0; letter-spacing: 0.02em; }
-h2 { font-size: 1.875rem; line-height: 1.2; margin: 4rem 0 1.25rem; font-weight: 700; letter-spacing: -0.015em; color: var(--accent-warm); scroll-margin-top: 2rem; }
+h2 { font-size: 1.875rem; line-height: 1.2; margin: 4rem 0 1.25rem; font-weight: 700; letter-spacing: -0.015em; color: var(--text); scroll-margin-top: 2rem; }
 h2:first-child { margin-top: 0; }
 h3 { font-size: 1.25rem; margin: 2.75rem 0 1rem; font-weight: 600; color: var(--accent); scroll-margin-top: 2rem; }
 p { margin: 0 0 1.25rem; }
 .lede { font-size: 1.1875rem; line-height: 1.6; }
-p strong, li strong { color: var(--accent-warm); font-weight: 600; }
+p strong, li strong { color: var(--text); font-weight: 600; }
 em { color: var(--muted); font-style: italic; }
 ul { margin: 0 0 1.25rem; padding-left: 1.25rem; }
 li { margin: 0 0 0.625rem; }
@@ -101,7 +102,7 @@ code {
 }
 .caption { font-style: italic; color: var(--muted); font-size: 0.9375rem; text-align: center; margin: 0.75rem auto 2.5rem; max-width: 640px; line-height: 1.55; }
 hr { border: none; border-top: 1px solid var(--rule); margin: 3rem 0; }
-a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0, 194, 168, 0.3); transition: border-color 0.15s; }
+a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(148,226,213, 0.3); transition: border-color 0.15s; }
 a:hover { border-bottom-color: var(--accent); }
 footer.page-footer { grid-column: 1 / -1; margin-top: 0; padding: 2rem 0 4rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.875rem; text-align: center; }
 footer.page-footer a { color: var(--accent); }
@@ -132,7 +133,7 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
   border: 1px solid var(--rule);
   border-left: 3px solid var(--accent-violet);
   border-radius: 8px;
-  background: linear-gradient(135deg, rgba(124,92,255,0.05), transparent);
+  background: linear-gradient(135deg, rgba(203,166,247,0.05), transparent);
 }
 .for-eng > summary {
   cursor: pointer; list-style: none;
@@ -146,12 +147,22 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
 .for-eng > summary:hover { color: var(--text); }
 .for-eng-body { padding: 0 1rem 1rem; font-size: 0.9375rem; }
 .for-eng-body p:last-child { margin-bottom: 0; }
+.for-eng-body table { width: 100%; border-collapse: collapse; margin: 0.25rem 0 1rem; font-size: 0.8125rem; }
+.for-eng-body th, .for-eng-body td { text-align: left; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--rule); }
+.for-eng-body th { color: var(--muted); font-weight: 600; font-size: 0.6875rem; letter-spacing: 0.04em; text-transform: uppercase; }
+.for-eng-body td { font-family: 'JetBrains Mono', ui-monospace, monospace; color: var(--text); }
+.for-eng-body th:first-child, .for-eng-body td:first-child { font-family: inherit; }
+.formula {
+  font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.8125rem; line-height: 1.7;
+  background: var(--surface); border: 1px solid var(--rule); border-left: 3px solid var(--accent-violet);
+  border-radius: 6px; padding: 0.75rem 1rem; margin: 0.75rem 0; color: var(--text); overflow-x: auto;
+}
 
 /* "Try it" callout */
 .tryit {
   margin: 2rem 0; padding: 0.9rem 1.1rem;
   border: 1px solid var(--rule); border-left: 3px solid var(--accent);
-  border-radius: 8px; background: linear-gradient(135deg, rgba(0,194,168,0.07), transparent);
+  border-radius: 8px; background: linear-gradient(135deg, rgba(148,226,213,0.07), transparent);
 }
 .tryit-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 700; margin-bottom: 0.4rem; }
 .tryit p { margin: 0; font-size: 0.9375rem; line-height: 1.55; }
@@ -166,11 +177,11 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
 .fn-label { font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); margin-bottom: 0.3rem; }
 .fn-text { font-size: 0.875rem; color: var(--text); line-height: 1.4; }
 .fn-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; line-height: 1.4; }
-.flow-node.fn-model { border-color: var(--accent-violet); border-left-width: 3px; background: linear-gradient(135deg, rgba(124,92,255,0.07), transparent); }
+.flow-node.fn-model { border-color: var(--accent-violet); border-left-width: 3px; background: linear-gradient(135deg, rgba(203,166,247,0.07), transparent); }
 .flow-node.fn-model .fn-label { color: var(--accent-violet); }
-.flow-node.fn-slow { border-color: var(--accent-warm); border-left-width: 3px; background: linear-gradient(135deg, rgba(242,199,68,0.08), transparent); }
+.flow-node.fn-slow { border-color: var(--accent-warm); border-left-width: 3px; background: linear-gradient(135deg, rgba(249,226,175,0.08), transparent); }
 .flow-node.fn-slow .fn-label { color: var(--accent-warm); }
-.flow-node.fn-quiet { border-style: dashed; border-color: rgba(0,194,168,0.4); background: linear-gradient(135deg, rgba(0,194,168,0.05), transparent); }
+.flow-node.fn-quiet { border-style: dashed; border-color: rgba(148,226,213,0.4); background: linear-gradient(135deg, rgba(148,226,213,0.05), transparent); }
 .flow-node.fn-quiet .fn-label { color: var(--accent); }
 .flow-arrow { align-self: center; color: var(--accent); font-size: 1.05rem; flex: 0 0 auto; }
 .flow-branch { display: flex; flex-direction: column; gap: 0.5rem; flex: 1 1 0; min-width: 0; }
@@ -182,7 +193,7 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
 .flow-legend i { width: 11px; height: 11px; border-radius: 3px; flex: 0 0 auto; }
 .lg-slow { background: var(--accent-warm); }
 .lg-model { background: var(--accent-violet); }
-.lg-quiet { background: rgba(0,194,168,0.5); }
+.lg-quiet { background: rgba(148,226,213,0.5); }
 @media (max-width: 700px) {
   .flow-row { flex-direction: column; }
   .flow-arrow { transform: rotate(90deg); }
@@ -252,16 +263,16 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
   line-height: 1;
 }
 .stack-flow-label { font-size: 0.75rem; font-style: italic; }
-.stack-layer[data-role="user"] { --layer-color: #F2C744; }
-.stack-layer[data-role="config"] { --layer-color: #00C2A8; }
-.stack-layer[data-role="harness"] { --layer-color: #94A3B8; }
-.stack-layer[data-role="api"] { --layer-color: #64748B; border-style: dashed; }
-.stack-layer[data-role="model"] { --layer-color: #7C5CFF; background: linear-gradient(135deg, rgba(124,92,255,0.06), transparent); }
+.stack-layer[data-role="user"] { --layer-color: #f9e2af; }
+.stack-layer[data-role="config"] { --layer-color: #94e2d5; }
+.stack-layer[data-role="harness"] { --layer-color: #a6adc8; }
+.stack-layer[data-role="api"] { --layer-color: #7f849c; border-style: dashed; }
+.stack-layer[data-role="model"] { --layer-color: #cba6f7; background: linear-gradient(135deg, rgba(203,166,247,0.06), transparent); }
 .stack-callout {
   margin: 0.375rem 0 0.375rem 48px;
   padding: 0.625rem 0.875rem;
-  background: rgba(124,92,255,0.06);
-  border: 1px dashed rgba(124,92,255,0.45);
+  background: rgba(203,166,247,0.06);
+  border: 1px dashed rgba(203,166,247,0.45);
   border-radius: 6px;
   font-size: 0.8125rem;
   color: var(--muted);
@@ -321,15 +332,15 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
   border-radius: 50%;
   background: var(--accent);
 }
-.matrix-supports { background: rgba(0, 194, 168, 0.06); }
+.matrix-supports { background: rgba(148,226,213, 0.06); }
 .matrix-supports .matrix-dot {
   background: var(--accent);
-  box-shadow: 0 0 10px rgba(0,194,168,0.45);
+  box-shadow: 0 0 10px rgba(148,226,213,0.45);
 }
-.matrix-default { background: rgba(124,92,255,0.1); }
+.matrix-default { background: rgba(203,166,247,0.1); }
 .matrix-default .matrix-dot {
   background: var(--accent-violet);
-  box-shadow: 0 0 14px rgba(124,92,255,0.55);
+  box-shadow: 0 0 14px rgba(203,166,247,0.55);
   width: 14px;
   height: 14px;
 }
@@ -344,28 +355,31 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
 }
 .matrix-legend > span { display: flex; align-items: center; gap: 0.5rem; }
 .matrix-legend-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; }
-.matrix-legend-dot.is-default { background: var(--accent-violet); box-shadow: 0 0 8px rgba(124,92,255,0.5); }
-.matrix-legend-dot.is-supports { background: var(--accent); box-shadow: 0 0 8px rgba(0,194,168,0.4); }
+.matrix-legend-dot.is-default { background: var(--accent-violet); box-shadow: 0 0 8px rgba(203,166,247,0.5); }
+.matrix-legend-dot.is-supports { background: var(--accent); box-shadow: 0 0 8px rgba(148,226,213,0.4); }
 
-/* ── Index page (single column) ───────────────────────────────────────────────
-   Scoped under .container so its h1/h2/footer rules never collide with the
-   post pages' heading and footer styles, which share this same stylesheet. */
-.container { max-width: 720px; margin: 0 auto; padding: 5rem 1.5rem 4rem; }
-.container h1 { font-size: 2.25rem; font-weight: 700; letter-spacing: -0.025em; margin: 0 0 0.5rem; }
-.tagline { color: var(--muted); font-size: 1.0625rem; margin: 0 0 2.5rem; }
-.about { margin: 0 0 3rem; color: var(--text); }
-.container h2 { font-size: 1.25rem; font-weight: 600; color: var(--accent-warm); margin: 2.5rem 0 1rem; letter-spacing: -0.005em; }
+/* ── Index page (3-column, on the same shell as the article pages) ──────────── */
 .posts { list-style: none; padding: 0; margin: 0; }
 .post-item { padding: 1rem 0; border-bottom: 1px solid var(--rule); }
 .post-item:last-child { border-bottom: none; }
 .post-date { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.8125rem; color: var(--muted); margin-bottom: 0.25rem; }
 .post-title { font-size: 1.125rem; font-weight: 600; margin: 0 0 0.375rem; }
-.post-title a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0, 194, 168, 0.3); transition: border-color 0.15s; }
+.post-title a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(148,226,213, 0.3); transition: border-color 0.15s; }
 .post-title a:hover { border-bottom-color: var(--accent); }
 .post-desc { font-size: 0.9375rem; color: var(--muted); margin: 0; line-height: 1.55; }
-.container footer { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.875rem; }
-.container footer a { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(0, 194, 168, 0.3); }
-.container footer a:hover { border-bottom-color: var(--accent); }
+
+/* Topics filter (index right sidebar). Mirrors the on-this-page TOC styling. */
+.topic-list { display: flex; flex-direction: column; gap: 0; }
+.topic-link {
+  display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+  padding: 0.375rem 0 0.375rem 0.875rem; color: var(--muted);
+  text-decoration: none; border: none; border-left: 2px solid var(--rule);
+  font-size: 0.875rem; line-height: 1.4; cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.topic-link:hover { color: var(--text); border-left-color: var(--accent); }
+.topic-link.is-active { color: var(--text); border-left-color: var(--accent); font-weight: 600; }
+.topic-count { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.75rem; color: var(--muted); }
 
 
 /* Per-post CSS for llm-pipeline-on-a-workstation.
@@ -382,7 +396,7 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
 }
 .uc-node.uc-model {
   border-color: var(--accent-violet); border-left-width: 3px;
-  background: linear-gradient(135deg, rgba(124,92,255,0.07), transparent);
+  background: linear-gradient(135deg, rgba(203,166,247,0.07), transparent);
 }
 .uc-label { font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.35rem; }
 .uc-text { font-size: 0.9375rem; color: var(--text); line-height: 1.45; }
@@ -412,8 +426,8 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
 .ps-bn { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
 .ps-bn b { color: var(--text); font-weight: 600; }
 .pipe-substrate {
-  margin-top: 0.75rem; border: 1px dashed rgba(0,194,168,0.45); border-radius: 8px;
-  padding: 0.65rem 0.9rem; background: linear-gradient(135deg, rgba(0,194,168,0.07), transparent);
+  margin-top: 0.75rem; border: 1px dashed rgba(148,226,213,0.45); border-radius: 8px;
+  padding: 0.65rem 0.9rem; background: linear-gradient(135deg, rgba(148,226,213,0.07), transparent);
   font-size: 0.8125rem; color: var(--muted); line-height: 1.45;
 }
 .pipe-substrate b { color: var(--accent); font-weight: 600; }
@@ -421,18 +435,30 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
   .pipe-phases { grid-template-columns: 1fr; }
 }
 
+/* Recipe payoff block (one-off, this post). Reuses the .tryit callout treatment. */
+.payoff { margin: 2.5rem 0 0.5rem; }
+.payoff-label { font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); font-weight: 700; margin-bottom: 0.6rem; }
+.recipe-card {
+  margin: 1.25rem 0; padding: 0.9rem 1.1rem;
+  border: 1px solid var(--rule); border-left: 3px solid var(--accent);
+  border-radius: 8px; background: linear-gradient(135deg, rgba(148,226,213,0.07), transparent);
+}
+.recipe-card h4 { margin: 0 0 0.5rem; font-size: 1.0625rem; font-weight: 600; color: var(--text); line-height: 1.35; }
+.recipe-note { font-weight: 400; font-size: 0.8125rem; color: var(--muted); }
+.recipe-card p { margin: 0 0 0.75rem; font-size: 0.9375rem; line-height: 1.55; }
+.recipe-card ol { margin: 0; padding-left: 1.25rem; }
+.recipe-card li { margin: 0 0 0.4rem; font-size: 0.9375rem; line-height: 1.5; }
+
 </style>
 </head>
 <body>
-
-<div class="page-bar" aria-hidden="true"></div>
 
 <nav class="site-nav">
   <div class="site-nav-inner">
     <a class="brand" href="index.html">Notes from the AIHomeLab</a>
     <div class="nav-links">
-      <a href="https://github.com/knachiketa04" target="_blank" rel="noopener">GitHub</a>
-      <a href="https://www.linkedin.com/in/kumar-nachiketa/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/knachiketa04" target="_blank" rel="noopener" aria-label="GitHub" title="GitHub"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></a>
+      <a href="https://www.linkedin.com/in/kumar-nachiketa/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg class="nav-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
     </div>
   </div>
 </nav>
@@ -796,14 +822,14 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
         <p class="flow-caption">Almost all the cost that matters is in the first box: a one-time start-up that was <b>one core doing a parallel job alone</b>. After that, steady-state speed is the memory wall again.</p>
       </div>
 
-      <p>During that 106-second start-up, exactly one processor core was pinned at full tilt while nineteen others sat idle, and the disk barely ticked over. The default loader unpacks the model one piece at a time on a single thread. I changed one setting to a loader that unpacks all the pieces in parallel, and the start-up dropped from 106 seconds to about 6, then to about 3 with a different one. Same model, same bytes, same disk. An 18-to-36-times speedup, and I never touched storage. The proof it was never the disk: warming the cache first changed nothing at all.</p>
+      <p>During that 106-second start-up, exactly one processor core was pinned at full tilt while nineteen others sat idle, and the disk barely ticked over. The default loader unpacks the model one piece at a time on a single thread. I changed one setting to a loader that unpacks all the pieces in parallel, and the start-up dropped from 106 seconds to about 6, then to about 3 with a different one. Same model, same bytes, same disk. A 14-to-36-times speedup, and I never touched storage. The proof it was never the disk: warming the cache first changed nothing at all.</p>
 
       <p>But this step is also where the disk finally gets its moment, and it is worth seeing why. "The disk did not matter" was true only because the slow loader was too slow to stress it. The instant you put in a fast loader, it reads the disk at nearly full speed, and now the disk is the next thing in line to be the bottleneck. Put the model on a slower networked drive and that fast loader would feel it immediately, while the old slow loader never would have noticed. The disk was not innocent by law. It was innocent because nothing was asking enough of it yet.</p>
 
       <details class="for-eng">
         <summary>For engineers</summary>
         <div class="for-eng-body">
-          <p>Cold-loading the <strong>15.27 GiB</strong> student with vLLM's default loader: ~<strong>106 s</strong>. A one-line <code>--load-format</code> change, same bytes, byte-identical output:</p>
+          <p>Cold-loading the <strong>15.27 GiB</strong> base weights with vLLM's default loader: ~<strong>106 s</strong>. A one-line <code>--load-format</code> change, same bytes, byte-identical output:</p>
           <table>
             <thead><tr><th>Loader</th><th>Cold load</th><th>vs default</th></tr></thead>
             <tbody>
@@ -812,9 +838,51 @@ footer.page-footer p { max-width: 640px; margin: 0 auto 1rem; }
               <tr><td><code>runai_streamer</code></td><td>~3 s</td><td>36x</td></tr>
             </tbody>
           </table>
+          <p>An independent reproduction, where the default loader landed faster at about 88 seconds, read 14 to 28x; the order-of-magnitude gap held.</p>
           <p>During the default load, one core pinned near 100% while the other 19 sat idle, and the NVMe peaked around <strong>0.5 GB/s</strong>, a few percent of a Gen5 drive (~0.14 GiB/s effective). Dropping the page cache first changed nothing: warm equals cold means the work is per-tensor materialization in Python, not disk reads. Once the CPU wall is gone, RunAI hit ~<strong>9.2 GB/s</strong> on a ~10 GB/s drive, and the storage tier re-enters as the next ceiling: a source slower than local NVMe would throttle the fast loaders, while the default loader is too slow to feel the disk at all. <em>The 18-36x and one-core signature are measured; the networked-source consequence follows from this lab's measured ceilings but was not run here.</em></p>
         </div>
       </details>
+
+      <div class="payoff">
+  <div class="payoff-label">What she actually gets</div>
+
+      <p>Back to the request at the very top. Here is the recipe the finished model wrote for my wife's exact words, "a vegan Punjabi curry with chickpeas and spinach, no coconut," served off the two machines in our house:</p>
+
+      <div class="recipe-card">
+    <h4>Vegan Punjabi Chickpea and Spinach Curry <span class="recipe-note">(it labeled this "Gobi Aloo Sabzi-style")</span></h4>
+    <p><strong>Serves 2 to 3.</strong> 1 cup cooked chickpeas, 2 cups fresh spinach, 1 onion, 2 to 3 garlic cloves, 1 to 2 green chilies, 1 tbsp tomato paste, 1 tsp turmeric, 1 tsp garam masala, 1 tsp cumin seeds, 1 tbsp oil (sunflower or avocado), salt.</p>
+    <ol>
+      <li>Heat the oil, add cumin seeds, let them sizzle for ten seconds.</li>
+      <li>Sauté the onion until golden, then add the garlic and green chilies for a minute.</li>
+      <li>Stir in the tomato paste and cook two to three minutes until it thickens.</li>
+      <li>Add the chickpeas, turmeric, and a splash of water; simmer five minutes.</li>
+      <li>Add the spinach and cook until wilted, three to four minutes; stir in the garam masala and salt.</li>
+      <li>Serve hot with rice or flatbread.</li>
+    </ol>
+  </div>
+
+      <p>That is a real, servable curry: vegan, no coconut, chickpeas and spinach as asked. It is also where the honest part lives. Look at the title. "Gobi Aloo" is a cauliflower-and-potato dish, and this one has neither. That was not a fluke. Across five tries the student stamped a "Gobi Aloo" or "Gobi Palak" label on four of them, every time confident, every time wrong. It learned the house style of its training set, the habit of giving each dish a regional name, without learning the accuracy to make the name fit. The plain base model never did this; it just called the dish what it was. That is Step 4 again: the slow part was never the disk, it was the data and the judgment baked into it.</p>
+
+      <p>The same shape shows up on the one rule I actually trained for. Tell the base model "no coconut" and it still reaches for coconut oil as a default cooking fat in four of five tries. The fine-tuned student is better, two of five, but better is not fixed. So the fine-tune did not buy me a better cook, my wife's phone still wins, and it did not buy me a reliable one either. What it bought was a partial improvement on the constraint, four in five down to two in five, plus the kitchen's house voice. That is the honest size of what a fine-tune onto an 8B student moves, worth knowing before you spend the GPUs.</p>
+
+      <details class="for-eng">
+    <summary>For engineers</summary>
+    <div class="for-eng-body">
+      <p>One prompt, one system message, temperature 0.7, seed 42, thinking disabled. Served as base Qwen3-8B plus the vegan LoRA adapter on a single vLLM server, where the request's <code>model</code> field selects base or fine-tuned. This is an illustrative sample, not a benchmark; the quantitative quality numbers belong to the eval, not to one generation.</p>
+      <table>
+        <thead><tr><th></th><th>Fine-tuned (LoRA)</th><th>Base Qwen3-8B</th></tr></thead>
+        <tbody>
+          <tr><td>Offered coconut oil despite "no coconut"</td><td>2 of 5 samples</td><td>4 of 5 samples</td></tr>
+          <tr><td>Invented an inaccurate "Gobi" dish label</td><td>4 of 5 samples</td><td>never</td></tr>
+          <tr><td>Register</td><td>plain recipe voice</td><td>generic assistant, emoji</td></tr>
+          <tr><td>Length</td><td>~350 tokens</td><td>~580 tokens</td></tr>
+        </tbody>
+      </table>
+      <p>Five seeds at temperature 0.7, hand-checked against the raw generations. The base offered coconut oil as a cooking fat in 4 of 5 (a fifth named coconut milk only to tell you to skip it, so it does not count); the fine-tune in 2 of 5. The fine-tune invented an inaccurate "Gobi" label in 4 of 5; the base never did. Small n, illustrative and hand-verified, not a benchmark.</p>
+      <p>The serve command and the request driver ship in the pipeline's <a href="https://github.com/knachiketa04/aihomelab/tree/main/artifacts/concepts/llm-pipeline-on-a-workstation/reproduce/serve/" target="_blank" rel="noopener">serve kit</a>.</p>
+    </div>
+  </details>
+</div>
 
       <h2 id="was-it-storage">So was it ever storage?</h2>
 
