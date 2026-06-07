@@ -1,0 +1,52 @@
+/* Per-post CSS for llm-pipeline-on-a-workstation.
+   One-off diagram styles used only by this post: the use-case strip and the
+   five-stage pipeline gauge. They live here, not in site.css, per the
+   "promote on the second sighting" rule (see ../COMPONENTS.md). If either
+   grammar recurs in a future post, promote it to a real component. */
+
+/* Diagram: what my wife sees (the use case) */
+.usecase { display: flex; align-items: stretch; gap: 0.5rem; margin: 1.5rem 0 2rem; }
+.uc-node {
+  flex: 1 1 0; background: var(--surface); border: 1px solid var(--rule);
+  border-radius: 10px; padding: 0.875rem 1rem;
+}
+.uc-node.uc-model {
+  border-color: var(--accent-violet); border-left-width: 3px;
+  background: linear-gradient(135deg, rgba(124,92,255,0.07), transparent);
+}
+.uc-label { font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); margin-bottom: 0.35rem; }
+.uc-text { font-size: 0.9375rem; color: var(--text); line-height: 1.45; }
+.uc-arrow { align-self: center; color: var(--accent); font-size: 1.15rem; flex: 0 0 auto; }
+@media (max-width: 700px) {
+  .usecase { flex-direction: column; }
+  .uc-arrow { transform: rotate(90deg); align-self: center; }
+}
+
+/* Diagram: the build pipeline */
+.pipeline { margin: 1.5rem 0 0.5rem; }
+.pipe-phases { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; align-items: start; }
+.pipe-phase { border: 1px solid var(--rule); border-radius: 10px; padding: 0.75rem 0.75rem 0.85rem; }
+.pipe-phase-label {
+  font-size: 0.625rem; text-transform: uppercase; letter-spacing: 0.08em;
+  color: var(--accent-warm); font-weight: 700; margin-bottom: 0.65rem; text-align: center;
+}
+.pipe-stages { display: flex; flex-direction: column; gap: 0.55rem; }
+.pipe-stage { background: var(--surface); border: 1px solid var(--rule); border-radius: 8px; padding: 0.6rem 0.7rem; }
+.ps-top { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.3rem; }
+.ps-num {
+  font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.7rem; font-weight: 600;
+  color: var(--bg); background: var(--accent); border-radius: 5px; padding: 0.05rem 0.4rem; flex: 0 0 auto;
+}
+.ps-name { font-weight: 600; font-size: 0.9375rem; color: var(--text); line-height: 1.2; }
+.ps-desc { font-size: 0.8125rem; color: var(--muted); margin-bottom: 0.35rem; line-height: 1.4; }
+.ps-bn { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+.ps-bn b { color: var(--text); font-weight: 600; }
+.pipe-substrate {
+  margin-top: 0.75rem; border: 1px dashed rgba(0,194,168,0.45); border-radius: 8px;
+  padding: 0.65rem 0.9rem; background: linear-gradient(135deg, rgba(0,194,168,0.07), transparent);
+  font-size: 0.8125rem; color: var(--muted); line-height: 1.45;
+}
+.pipe-substrate b { color: var(--accent); font-weight: 600; }
+@media (max-width: 700px) {
+  .pipe-phases { grid-template-columns: 1fr; }
+}

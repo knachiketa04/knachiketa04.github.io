@@ -26,3 +26,9 @@ Thumbs.db
 # Local previews / generated artifacts
 .cache/
 node_modules/
+
+# Blog build pipeline. build/ is TRACKED source (Markdown posts, templates,
+# styles, build.py, COMPONENTS.md). Ignore only its local-only artifacts:
+build/__pycache__/
+build/drafts/
+build/.pre-promote-backup/

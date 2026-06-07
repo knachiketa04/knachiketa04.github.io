@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ pagetitle }}</title>
+<meta name="description" content="{{ description }}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+{{ styles }}
+</style>
+</head>
+<body>
+
+<div class="page-bar" aria-hidden="true"></div>
+
+<nav class="site-nav">
+  <div class="site-nav-inner">
+    <a class="brand" href="index.html">Notes from the AIHomeLab</a>
+    <div class="nav-links">
+      <a href="https://github.com/knachiketa04" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/kumar-nachiketa/" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</nav>
+
+<div class="page">
+
+  <header class="page-header">
+    <h1>{{ title }}</h1>
+    <p class="subtitle">{{ subtitle }}</p>
+    <p class="meta">{{ byline }}</p>
+  </header>
+
+  <div class="body-grid">
+
+    <aside class="sidebar sidebar-left" aria-label="Page metadata">
+{{ meta_cards }}
+    </aside>
+
+    <main class="content">
+
+{{ content }}
+
+    </main>
+
+    <aside class="sidebar sidebar-right" aria-label="On this page">
+      <div class="toc-label">On this page</div>
+      <nav class="toc">
+{{ toc }}
+      </nav>
+    </aside>
+
+  </div>
+
+  <footer class="page-footer">
+    <p class="footer-home"><a href="index.html">&larr; All posts</a></p>
+    <p>{{ sourcenote }}</p>
+    <p>Open an issue at <a href="https://github.com/knachiketa04/knachiketa04.github.io/issues" target="_blank" rel="noopener">github.com/knachiketa04/knachiketa04.github.io/issues</a>.</p>
+  </footer>
+</div>
+
+</body>
+</html>
