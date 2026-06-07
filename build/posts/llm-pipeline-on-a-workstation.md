@@ -26,6 +26,7 @@ What follows is the five steps in plain language, each with a small diagram. Wan
       <div class="tryit">
         <div class="tryit-label">Try it yourself</div>
         <p>The whole pipeline ships as an <a href="https://github.com/knachiketa04/aihomelab/tree/main/artifacts/concepts/llm-pipeline-on-a-workstation/reproduce/" target="_blank" rel="noopener">end-to-end reproduce kit</a>: the as-run scripts for every stage (ingest and clean, synthetic generation, fine-tune, eval, serve), plus a run guide. Paths and hosts are parameterized, so it adapts to hardware beyond the DGX Spark I used.</p>
+        <p>The two things it produces are public on Hugging Face: the <a href="https://huggingface.co/datasets/knachiketa004/vegan-vegetarian-recipes-qa" target="_blank" rel="noopener">synthetic recipe Q&amp;A dataset</a> the tutor wrote in Step 2, and the fine-tuned <a href="https://huggingface.co/knachiketa004/vegetarian-recipe-qwen3-8b-lora" target="_blank" rel="noopener">Qwen3-8B vegan-recipe LoRA</a> the student became in Step 3. Pull either one straight, or rebuild both from the kit.</p>
       </div>
 
 ## The five steps, at a glance {#the-five-steps} {toc:The five steps, at a glance}
@@ -153,7 +154,7 @@ What about my storage worry, loading that 61 GB tutor off disk in the first plac
       <details class="for-eng">
         <summary>For engineers</summary>
         <div class="for-eng-body">
-          <p>32B teacher (Qwen3-32B), ~61 GiB of weights, run data-parallel across both nodes to generate the instruction-tuning set. The memory-wall floor on decode:</p>
+          <p>32B teacher (Qwen3-32B), ~61 GiB of weights, run data-parallel across both nodes to generate <a href="https://huggingface.co/datasets/knachiketa004/vegan-vegetarian-recipes-qa" target="_blank" rel="noopener">the instruction-tuning set</a>. The memory-wall floor on decode:</p>
           <div class="formula">seconds per token &ge; model bytes / memory bandwidth<br>61 GiB &asymp; 65.5 GB ; &nbsp;65.5 GB / 273 GB/s &asymp; <strong>0.24 s/token</strong></div>
           <p>That 0.24 is a derived ceiling, not a captured single-stream latency; batching rescues throughput, not latency. Measured aggregate ~<strong>0.6 requests/sec/node</strong> at batch size 32. Cold-load of the teacher from Lustre took <strong>419 to 432 s</strong> (~149 MiB/s effective), and cold vs warm landed within <strong>3%</strong> of each other, the tell that the load is CPU-bound deserialization, not disk. Prefix cache hit <strong>94%</strong>; output JSONL wrote at ~<strong>3 KB/s</strong>. A separate, harder ceiling: the UMA GPU allocator accumulated pressure across dozens of reloads and eventually wedged the node, capping the run at <strong>12,368 rows</strong>. That is a reliability limit, not a storage one. <em>The cold/warm spread is measured; the 0.24 ceiling is arithmetic the run never reached.</em></p>
         </div>
@@ -304,7 +305,7 @@ But this step is also where the disk finally gets its moment, and it is worth se
   <details class="for-eng">
     <summary>For engineers</summary>
     <div class="for-eng-body">
-      <p>One prompt, one system message, temperature 0.7, seed 42, thinking disabled. Served as base Qwen3-8B plus the vegan LoRA adapter on a single vLLM server, where the request's <code>model</code> field selects base or fine-tuned. This is an illustrative sample, not a benchmark; the quantitative quality numbers belong to the eval, not to one generation.</p>
+      <p>One prompt, one system message, temperature 0.7, seed 42, thinking disabled. Served as base Qwen3-8B plus the <a href="https://huggingface.co/knachiketa004/vegetarian-recipe-qwen3-8b-lora" target="_blank" rel="noopener">vegan LoRA adapter</a> on a single vLLM server, where the request's <code>model</code> field selects base or fine-tuned. This is an illustrative sample, not a benchmark; the quantitative quality numbers belong to the eval, not to one generation.</p>
       <table>
         <thead><tr><th></th><th>Fine-tuned (LoRA)</th><th>Base Qwen3-8B</th></tr></thead>
         <tbody>
